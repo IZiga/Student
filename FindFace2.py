@@ -10,7 +10,23 @@ drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 cap = cv2.VideoCapture(0)
 
 
-with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5) as face_mesh:
+def landmarks_to_numpy(landmarks):
+    arr_xyz = np.array([[landmark.x, landmark.y, landmark.z] for landmark in landmarks])
+    print(arr_xyz)
+    return arr_xyz
+    # comment for test
+    # np.savez(file_name, *nparrays) or np.save(file_name, np_array)
+    # np.load(file_name)
+
+def save_landmarks_to_numpy(image, landmarks):
+    pass
+
+with mp_face_mesh.FaceMesh(
+    max_num_faces=1,
+    refine_landmarks=True,
+    min_detection_confidence=0.5,
+    min_tracking_confidence=0.5
+) as face_mesh:
     while True:
         success, image = cap.read()
 
@@ -27,7 +43,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
         if results.multi_face_landmarks:
             for face_landmarks in results.multi_face_landmarks:
                 landmarks = face_landmarks.landmark
-                arr_xyz = np.array([[landmark.x, landmark.y, landmark.z] for landmark in landmarks])
+                # save(landmarks, image)
                 mp_drawing.draw_landmarks(
                     image=image,
                     landmark_list=face_landmarks,
@@ -43,3 +59,6 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
         if cv2.waitKey(100) & 0xFF == 27:
             break
 cap.release()
+
+
+
